@@ -1,5 +1,6 @@
 from typing import Self
-from ast import ClassDef, FunctionDef
+from collections import defaultdict
+from ast import ClassDef, FunctionDef, walk, AST, Call, Attribute, Name
 
 
 class ClassData:
@@ -35,6 +36,9 @@ class ClassData:
     #
     # Calculation rule:
     #   ClassSize = TotalPropertiesCount + TotalMethodsCount
+    #
+    # Recommended value:
+    #   ≤ 20
     def class_size(self) -> int:
         value: int = len(self.properties) + len(self.methods)
         method_names: list[str] = self.method_names()
@@ -46,6 +50,9 @@ class ClassData:
         return value
 
     # `NOO` — Number of Operaions (Methods) Overriden by a Subclass
+    #
+    # Recommended value:
+    #   ≤ 3
     def number_of_operaions_overriden(self) -> int:
         value: int = 0
         for method in self.methods:
@@ -55,10 +62,13 @@ class ClassData:
         return value
 
     # `NOA` —  Number of Operations (Methods) Added by a Subclass
+    #
+    # Recommended value:
+    #   ≤ 0.75
     def number_of_added_operations(self) -> int:
         return len(self.methods) - self.number_of_operaions_overriden()
 
-    # `SI` —  Specialization Index
+    # `SI` — Specialization Index
     #
     # Calculation rule:
     #   SpecializationIndex = (NOO * Level) / M
@@ -66,6 +76,9 @@ class ClassData:
     #   where:  NOO     — Number of Operations (Methods) Overriden by a Subclass
     #           Level   — hierarchy level
     #           M       — total number of methods
+    #
+    # Recommended value:
+    #   ≤ 0.75
     def specialization_index(self) -> int:
         if (m := len(self.methods)) == 0:
             return 0
@@ -74,6 +87,61 @@ class ClassData:
         level: int = self.max_iheritance_depth()
 
         return (number_of_operations_overriden * level) / m
+
+    # `OSavg` — Average Operation Size
+    #
+    # Calculation rule:
+    #   AverageOperationSize = TotalOperationSizesOverAllMethods / M
+    #
+    #   where:  M — total number of methods
+    #
+    # Recommended value:
+    #   ≤ 9
+    def average_operation_size(self) -> float:
+        if (m := len(self.methods)) == 0:
+            return 0
+
+        operation_sizes: dict[str, int] = self.operation_sizes()
+        total_operation_sizes: int = sum(operation_sizes.values())
+        return total_operation_sizes / m
+
+    def operation_sizes(self) -> dict[str, int]:
+        sizes: dict[str, int] = defaultdict(int)
+        for method in self.methods:
+            for node in walk(method):
+                if (
+                    isinstance(node, Call)
+                    and isinstance(node.func, Attribute)
+                    and isinstance(node.func.value, Name)
+                    and node.func.value.id == "self"
+                ):
+                    sizes[node.func.attr] += 1
+        return sizes
+
+    # `NPavg` — Average Number of Parameters per operation
+    #
+    # Calculation rule:
+    #   AverageNumberOfParameters = TotalOperationSizesOverAllMethods / M
+    #
+    #   where:  M — total number of methods
+    #
+    # Recommended value:
+    #   ≤ 0.7
+    def average_number_of_parameters(self) -> float:
+        if (m := len(self.methods)) == 0:
+            return 0
+
+        number_of_parameters: dict[str, int] = self.number_of_parameters()
+        total_number_of_parameters: int = sum(number_of_parameters.values())
+        return total_number_of_parameters / m
+
+    def number_of_parameters(self) -> dict[str, int]:
+        parameters: dict[str, int] = defaultdict(int)
+        for method in self.methods:
+            parameters[method.name] = sum(
+                1 for arg in method.args.args if arg.arg != "self"
+            )
+        return parameters
 
     def add_base_class(self, base_class: Self) -> None:
         self.base_classes.append(base_class)

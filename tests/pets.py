@@ -38,11 +38,16 @@ class Pet(Animal):
     def run(self):
         self.weight -= 0.3
 
+    def daily_activity(self) -> None:
+        self.eat()
+        self.run()
+
 
 class Cat(Pet):
     language = "Meow"
 
     def say_name(self) -> str:
+        self.daily_activity()
         return f"{self.language}, my name is {self.name} and I am nice!"
 
 
@@ -50,4 +55,5 @@ class Dog(Pet):
     language = "Woof"
 
     def say_name(self) -> str:
+        self.daily_activity()
         return f"{self.language}, my name is {self.name} and I smell funny!"

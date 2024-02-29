@@ -46,3 +46,25 @@ def print_specialization_index(metrics_counter: MetricsCounter) -> None:
             f"{cclass.name}: {cclass.specialization_index()} <= {recommended_value} "
             f"— {cclass.specialization_index() <= recommended_value}"
         )
+
+
+def print_average_operation_size(metrics_counter: MetricsCounter) -> None:
+    recommended_value: int = 9
+    print("\nAverage Operation Size (OSavg) Metric:")
+    for cclass in metrics_counter.classes:
+        current_value: float = cclass.average_operation_size()
+        print(
+            f"{cclass.name}: {current_value} <= {recommended_value} "
+            f"— {current_value <= recommended_value}"
+        )
+
+
+def print_average_number_of_parameters(metrics_counter: MetricsCounter) -> None:
+    recommended_value: float = 0.7
+    print("\nAverage Number of Parameters per operation (NPavg) Metric:")
+    for cclass in metrics_counter.classes:
+        current_value: float = cclass.average_number_of_parameters()
+        print(
+            f"{cclass.name}: {current_value} <= {recommended_value} "
+            f"— {current_value <= recommended_value}"
+        )
