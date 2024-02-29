@@ -32,6 +32,12 @@ class Pet(Animal):
     def say_name_loudly(self):
         return self.say_name().upper()
 
+    def eat(self):
+        self.weight += 0.3
+
+    def run(self):
+        self.weight -= 0.3
+
 
 class Cat(Pet):
     language = "Meow"

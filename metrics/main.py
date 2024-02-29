@@ -4,7 +4,9 @@ from .counter import MetricsCounter
 from .pretty_printer import (
     print_class_size,
     print_collected_classes,
-    print_number_of_operation_overriden,
+    print_number_of_operations_overriden,
+    print_number_of_added_operations,
+    print_specialization_index,
 )
 
 
@@ -14,4 +16,6 @@ def main() -> None:
 
     print_collected_classes(metrics_counter)
     print_class_size(metrics_counter)
-    print_number_of_operation_overriden(metrics_counter)
+    print_number_of_operations_overriden(metrics_counter)
+    print_number_of_added_operations(metrics_counter)
+    print_specialization_index(metrics_counter)
