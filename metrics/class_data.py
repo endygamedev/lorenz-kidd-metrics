@@ -45,8 +45,28 @@ class ClassData:
             value += len(base_class.properties)
         return value
 
+    # `NOO` — Number of Operaions (Methods) Overriden by a Subclass
+    def number_of_operaion_overriden(self) -> int:
+        value = 0
+        for method in self.methods:
+            for base_class in self.base_classes:
+                if base_class.is_method_overriden(method.name):
+                    value += 1
+        return value
+
     def add_base_class(self, base_class: Self) -> None:
         self.base_classes.append(base_class)
 
     def method_names(self) -> list[str]:
         return [method.name for method in self.methods]
+
+    def is_method_overriden(self, target_method: str) -> bool:
+        for method in self.methods:
+            if method.name == target_method:
+                return True
+
+        for base_class in self.base_classes:
+            if base_class.is_method_overriden(target_method):
+                return True
+
+        return False

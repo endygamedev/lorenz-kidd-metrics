@@ -1,5 +1,19 @@
-class Pet:
-    def __init__(self, name, weight):
+class Animal:
+    def __init__(self, animal_type: str) -> None:
+        self.__animal_type = animal_type
+
+    @property
+    def animal_type(self) -> str:
+        return self.__animal_type
+
+    @animal_type.setter
+    def animal_type(self, value: str) -> None:
+        self.__animal_type = value
+
+
+class Pet(Animal):
+    def __init__(self, animal_type, name, weight):
+        super().__init__(animal_type)
         self.name = name
         self.weight = weight
 
@@ -20,20 +34,14 @@ class Pet:
 
 
 class Cat(Pet):
-
-    # Class attribute
     language = "Meow"
 
-    # Method
-    def say_name(self):
-        return "{}, my name is {} and I am nice!".format(self.language, self.name)
+    def say_name(self) -> str:
+        return f"{self.language}, my name is {self.name} and I am nice!"
 
 
 class Dog(Pet):
-
-    # Class attribute
     language = "Woof"
 
-    # Method
-    def say_name(self):
-        return "{}, my name is {} and I smell funny!".format(self.language, self.name)
+    def say_name(self) -> str:
+        return f"{self.language}, my name is {self.name} and I smell funny!"
