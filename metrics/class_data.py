@@ -1,6 +1,6 @@
 from typing import Self
 from collections import defaultdict
-from ast import ClassDef, FunctionDef, walk, AST, Call, Attribute, Name
+from ast import ClassDef, FunctionDef, walk, Call, Attribute, Name
 
 
 class ClassData:
