@@ -32,15 +32,12 @@ class Pet(Animal):
     def say_name_loudly(self):
         return self.say_name().upper()
 
-    def eat(self):
-        self.weight += 0.3
-
-    def run(self):
-        self.weight -= 0.3
+    def run(self, distance):
+        self.weight -= (distance / 2)
 
     def daily_activity(self) -> None:
-        self.eat()
-        self.run()
+        self.eat_food(0.3)
+        self.run(0.6)
 
 
 class Cat(Pet):

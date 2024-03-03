@@ -5,7 +5,8 @@ from .output import print_metrics, save_metrics
 
 
 def main() -> None:
-    package = Path("./tests")
+    # package = Path("./tests/goldenfile/goldenfile")
+    package = Path("./tests/basic")
     metrics_counter = MetricsCounter(package)
 
     config: Path = Path("./config/metics.yml")
