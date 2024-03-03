@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from .counter import MetricsCounter
-from .pretty_printer import (
+from .output import (
     print_class_size,
     print_collected_classes,
     print_number_of_operations_overriden,
