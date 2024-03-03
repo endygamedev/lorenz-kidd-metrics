@@ -1,0 +1,3 @@
+[submodule "tests/goldenfile"]
+	path = tests/goldenfile
+	url = https://github.com/Furetur/goldenfile
