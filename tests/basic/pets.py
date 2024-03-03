@@ -33,7 +33,7 @@ class Pet(Animal):
         return self.say_name().upper()
 
     def run(self, distance):
-        self.weight -= (distance / 2)
+        self.weight -= distance / 2
 
     def daily_activity(self) -> None:
         self.eat_food(0.3)
@@ -41,7 +41,12 @@ class Pet(Animal):
 
 
 class Cat(Pet):
-    language = "Meow"
+    def __init__(self) -> None:
+        self.__language = "Mew"
+
+    @property
+    def language(self) -> str:
+        return self.__language
 
     def say_name(self) -> str:
         self.daily_activity()
@@ -49,7 +54,12 @@ class Cat(Pet):
 
 
 class Dog(Pet):
-    language = "Woof"
+    def __init__(self) -> None:
+        self.__language = "Woof"
+
+    @property
+    def language(self) -> str:
+        return self.__language
 
     def say_name(self) -> str:
         self.daily_activity()
