@@ -1,70 +1,65 @@
 from pprint import pprint
+from pathlib import Path
+from typing import Any, Callable
+
+from yaml import safe_load, dump
 
 from .counter import MetricsCounter
+from .class_data import ClassData
 
 
-def print_collected_classes(metrics_counter: MetricsCounter) -> None:
+def read_config(path: Path) -> dict[str, Any]:
+    content: str = path.read_text(encoding="utf-8")
+    return safe_load(content)
+
+
+def print_metrics(
+    metrics_counter: MetricsCounter,
+    *,
+    config_path: Path,
+) -> None:
+    classes: list[ClassData] = metrics_counter.classes
+
     print("Collected classes:")
-    pprint(metrics_counter.classes)
+    pprint(classes)
+
+    config: dict[str, Any] = read_config(config_path)
+    for metric in config["metrics"]:
+        recommended_value = metric["value"]
+        method: str = metric["method"]
+        print(f"\n{metric['label']}")
+        print("-" * len(metric["label"]))
+        for cclass in classes:
+            class_method: Callable = getattr(cclass, method)
+            class_value = class_method()
+            print(
+                f"{cclass.name}: {class_value} ≤ {recommended_value} "
+                f"— {class_value <= recommended_value}"
+            )
 
 
-def print_class_size(metrics_counter: MetricsCounter) -> None:
-    recommended_value: int = 20
-    print("\nClass Size (CS) Metric:")
-    for cclass in metrics_counter.classes:
-        print(
-            f"{cclass.name}: {cclass.class_size()} <= {recommended_value} "
-            f"— {cclass.class_size() <= recommended_value}"
-        )
+def save_metrics(
+    metrics_counter: MetricsCounter,
+    *,
+    config_path: Path,
+    output_path: Path,
+) -> None:
+    classes: list[ClassData] = metrics_counter.classes
+    config: dict[str, Any] = read_config(config_path)
+    output = {}
 
+    for cclass in classes:
+        output[cclass.name] = [{} for _ in range(len(config["metrics"]))]
+        for index, metric in enumerate(config["metrics"]):
+            recommended_value = metric["value"]
+            method: str = metric["method"]
+            class_method: Callable = getattr(cclass, method)
+            class_value = class_method()
 
-def print_number_of_operations_overriden(metrics_counter: MetricsCounter) -> None:
-    recommended_value: int = 3
-    print("\nNumber of Operations Overriden by a Subclass (NOO) Metric:")
-    for cclass in metrics_counter.classes:
-        print(
-            f"{cclass.name}: {cclass.number_of_operaions_overriden()} <= {recommended_value} "
-            f"— {cclass.number_of_operaions_overriden() <= recommended_value}"
-        )
+            output[cclass.name][index]["label"] = metric["label"]
+            output[cclass.name][index]["value"] = {}
+            output[cclass.name][index]["value"]["expect"] = recommended_value
+            output[cclass.name][index]["value"]["actual"] = class_value
 
-
-def print_number_of_added_operations(metrics_counter: MetricsCounter) -> None:
-    recommended_value: int = 4
-    print("\nNumber of Operations Added by a Subclass (NOA) Metric:")
-    for cclass in metrics_counter.classes:
-        print(
-            f"{cclass.name}: {cclass.number_of_added_operations()} <= {recommended_value} "
-            f"— {cclass.number_of_added_operations() <= recommended_value}"
-        )
-
-
-def print_specialization_index(metrics_counter: MetricsCounter) -> None:
-    recommended_value: float = 0.75
-    print("\nSpecialization Index (SI) Metric:")
-    for cclass in metrics_counter.classes:
-        print(
-            f"{cclass.name}: {cclass.specialization_index()} <= {recommended_value} "
-            f"— {cclass.specialization_index() <= recommended_value}"
-        )
-
-
-def print_average_operation_size(metrics_counter: MetricsCounter) -> None:
-    recommended_value: int = 9
-    print("\nAverage Operation Size (OSavg) Metric:")
-    for cclass in metrics_counter.classes:
-        current_value: float = cclass.average_operation_size()
-        print(
-            f"{cclass.name}: {current_value} <= {recommended_value} "
-            f"— {current_value <= recommended_value}"
-        )
-
-
-def print_average_number_of_parameters(metrics_counter: MetricsCounter) -> None:
-    recommended_value: float = 0.7
-    print("\nAverage Number of Parameters per operation (NPavg) Metric:")
-    for cclass in metrics_counter.classes:
-        current_value: float = cclass.average_number_of_parameters()
-        print(
-            f"{cclass.name}: {current_value} <= {recommended_value} "
-            f"— {current_value <= recommended_value}"
-        )
+    with open(output_path, "w", encoding="utf-8") as output_file:
+        dump(output, output_file)

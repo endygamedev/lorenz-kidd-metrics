@@ -1,0 +1,20 @@
+---
+metrics:
+  - method: class_size
+    label: Class Size (CS) Metric
+    value: 20   # <= 20
+  - method: number_of_operaions_overriden
+    label: Number of Operations Overriden by a Subclass (NOO) Metric
+    value: 3    # <= 3
+  - method: number_of_added_operations
+    label: Number of Operations Added by a Subclass (NOA) Metric
+    value: 4    # <= 4
+  - method: specialization_index
+    label: Specialization Index (SI) Metric
+    value: 0.75 # <= 0.75
+  - method: average_operation_size
+    label: Average Operation Size (OSavg) Metric
+    value: 9    # <= 9
+  - method: average_number_of_parameters
+    label: Average Number of Parameters per operation (NPavg) Metric
+    value: 0.7  # <= 0.7

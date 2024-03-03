@@ -1,25 +1,15 @@
 from pathlib import Path
 
 from .counter import MetricsCounter
-from .output import (
-    print_class_size,
-    print_collected_classes,
-    print_number_of_operations_overriden,
-    print_number_of_added_operations,
-    print_specialization_index,
-    print_average_operation_size,
-    print_average_number_of_parameters,
-)
+from .output import print_metrics, save_metrics
 
 
 def main() -> None:
     package = Path("./tests")
     metrics_counter = MetricsCounter(package)
 
-    print_collected_classes(metrics_counter)
-    print_class_size(metrics_counter)
-    print_number_of_operations_overriden(metrics_counter)
-    print_number_of_added_operations(metrics_counter)
-    print_specialization_index(metrics_counter)
-    print_average_operation_size(metrics_counter)
-    print_average_number_of_parameters(metrics_counter)
+    config: Path = Path("./config/metics.yml")
+    print_metrics(metrics_counter, config_path=config)
+
+    output: Path = Path("./out/metrics.yml")
+    save_metrics(metrics_counter, config_path=config, output_path=output)
